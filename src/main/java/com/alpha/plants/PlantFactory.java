@@ -13,18 +13,19 @@ public class PlantFactory {
             return new Flower(30, true, 50, Growing.POT, "Cactus", Color.GREEN, true);
         }
         if (s.matches("Rose")) {
-            return new Flower(45, false, 30, Growing.UNDEFINED, "Tulip", Color.RED, true);
+            return new Flower(45, false, 30, Growing.UNDEFINED, "Rose", Color.RED, true);
         }
         if (s.matches("Tulip")) {
             return new Flower(50, false, 30, Growing.UNDEFINED, "Tulip", Color.YELLOW, true);
         }
         if (s.matches("Marigold")) {
-            return new Flower(30, false, 30, Growing.UNDEFINED, "Tulip", Color.ORANGE, true);
+            return new Flower(30, false, 30, Growing.UNDEFINED, "Marigold", Color.ORANGE, true);
 
         }
         if (s.matches("Palm")) {
-            return new Tree(100,true,150,Growing.UNDEFINED,"Palm");
+            return new Tree(100, true, 150, Growing.UNDEFINED, "Palm");
         }
         throw new IllegalArgumentException();
     }
+
 }

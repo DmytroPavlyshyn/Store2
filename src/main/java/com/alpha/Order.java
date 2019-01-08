@@ -1,34 +1,37 @@
 package com.alpha;
 
-import com.alpha.enums.BuyMethod;
-import com.alpha.enums.DeliveryMethod;
+import com.alpha.decorations.Priceable;
+import com.alpha.delivery.Delivery;
+import com.alpha.payment.PaymentMethod;
 
 public class Order implements Priceable {
     private Priceable priceable;
-    private DeliveryMethod deliveryMethod;
-    private BuyMethod buyMethod;
+    private Delivery deliveryMethod;
+    private PaymentMethod paymentMethod;
 
-    public Order(Priceable priceable, DeliveryMethod deliveryMethod, BuyMethod buyMethod) {
+    public Order(Priceable priceable, Delivery deliveryMethod, PaymentMethod paymentMethod) {
         this.priceable = priceable;
         this.deliveryMethod = deliveryMethod;
-        this.buyMethod = buyMethod;
+        this.paymentMethod = paymentMethod;
     }
 
     public Priceable getPriceable() {
         return priceable;
     }
 
-    public DeliveryMethod getDeliveryMethod() {
+    public Delivery getDeliveryMethod() {
         return deliveryMethod;
     }
 
-    public BuyMethod getBuyMethod() {
-        return buyMethod;
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
     @Override
     public int calculatePrice() {
-        return priceable.calculatePrice() + (int)((double)priceable.calculatePrice()* getDeliveryMethod().getPercents());
+        deliveryMethod.setPriceable(priceable);
+        int deliveryPrice = deliveryMethod.calculateDeliveryPrice();
+        return priceable.calculatePrice()+deliveryPrice;
     }
 
     @Override
@@ -36,7 +39,7 @@ public class Order implements Priceable {
         final StringBuffer sb = new StringBuffer("Order{");
         sb.append("priceable=").append(priceable);
         sb.append(", deliveryMethod=").append(deliveryMethod);
-        sb.append(", buyMethod=").append(buyMethod);
+        sb.append(", paymentMethod=").append(paymentMethod);
         sb.append('}');
         return sb.toString();
     }

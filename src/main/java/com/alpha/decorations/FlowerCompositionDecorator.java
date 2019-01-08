@@ -1,19 +1,27 @@
 package com.alpha.decorations;
 
 
-import com.alpha.Priceable;
+public abstract class FlowerCompositionDecorator extends FlowerComposition {
+    FlowerComposition flowerComposition;
 
-public abstract class FlowerCompositionDecorator  implements Priceable {
-    Priceable priceable;
-
-    public FlowerCompositionDecorator(Priceable priceable) {
-        this.priceable = priceable;
+    public FlowerCompositionDecorator(FlowerComposition flowerComposition) {
+        super(flowerComposition.getFlowers());
+        this.flowerComposition = flowerComposition;
     }
 
-    public Priceable getPriceable() {
-        return priceable;
+    public FlowerComposition getFlowerComposition() {
+        if (flowerComposition instanceof FlowerCompositionDecorator)
+            return ((FlowerCompositionDecorator) flowerComposition).getFlowerComposition();
+        return flowerComposition;
     }
 
 
+
+    @Override
+    public String toString() {
+        return "FlowerCompositionDecorator{" +
+                "flowerComposition=" + flowerComposition +
+                '}';
+    }
 }
 

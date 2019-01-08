@@ -4,7 +4,7 @@ package com.alpha.enums;
 import java.io.Serializable;
 
 public enum WrapperType implements Serializable {
-    PAPER(5), CARDBOARD(10),POLYETHYLENE(20);
+    PAPER(5), CARDBOARD(10),POLYETHYLENE(20), NONE(0);
     int price;
 
     WrapperType(int price) {

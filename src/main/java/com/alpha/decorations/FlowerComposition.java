@@ -1,7 +1,6 @@
 package com.alpha.decorations;
 
 
-import com.alpha.Priceable;
 import com.alpha.plants.Flower;
 
 import java.util.List;
@@ -25,4 +24,10 @@ public class FlowerComposition implements Priceable {
         return price;
     }
 
+    @Override
+    public String toString() {
+        return "FlowerComposition{" +
+                "flowers=" + flowers +
+                '}';
+    }
 }

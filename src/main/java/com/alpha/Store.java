@@ -1,12 +1,14 @@
 package com.alpha;
 
 
+
 import com.alpha.decorations.FlowerComposition;
 import com.alpha.decorations.FlowerCompositionDecorator;
 
-import com.alpha.enums.BuyMethod;
-import com.alpha.enums.DeliveryMethod;
+import com.alpha.decorations.Priceable;
+import com.alpha.delivery.Delivery;
 import com.alpha.enums.ShowFilter;
+import com.alpha.payment.PaymentMethod;
 import com.alpha.plants.Flower;
 import com.alpha.plants.Plant;
 import com.alpha.plants.Tree;
@@ -17,16 +19,15 @@ import java.util.*;
 public class Store {
 
     private List<Plant> inventoryOfPlants;
-    private List<FlowerComposition> readyFlowerDecorations;
+    private List<FlowerCompositionDecorator> readyFlowerDecorations;
     private List<Order> soldProducts = new ArrayList<>();
     private String country;
     private Set<Customer> customers = new LinkedHashSet<>();
     private Integer balance;
 
-    public Store(List<Plant> inventoryOfPlants, List<FlowerComposition> readyFlowerDecorations, String country) {
+    public Store(List<Plant> inventoryOfPlants, List<FlowerCompositionDecorator> readyFlowerDecorations) {
         this.inventoryOfPlants = inventoryOfPlants;
         this.readyFlowerDecorations = readyFlowerDecorations;
-        this.country = country;
         this.balance = 0;
     }
 
@@ -36,7 +37,7 @@ public class Store {
         return inventoryOfPlants;
     }
 
-    public List<FlowerComposition> getReadyFlowerDecorations() {
+    public List<FlowerCompositionDecorator> getReadyFlowerDecorations() {
         return readyFlowerDecorations;
     }
 
@@ -132,10 +133,46 @@ public class Store {
         return customerIterator.next();
     }
 
+    FlowerComposition createFlowerComposition(List<Flower> flowers) {
+        List<Flower> flowers1 = new ArrayList<>(flowers);
+        for (Plant plant : inventoryOfPlants) {
+            if (!(plant instanceof Flower)) {
+                continue;
+            }
+            if (flowers1.contains(plant)) {
+                flowers1.remove(plant);
+            }
+        }
+        if (flowers1.size() == 0) {
+            return new FlowerComposition(flowers);
+        }
+        throw new RuntimeException("There\'s no such flowers");
+    }
+
+    void buyFlowerBouquet(List<Flower> flowers, Customer customer, Delivery deliveryMethod, PaymentMethod paymentMethod) {
+        FlowerComposition flowerBouquet = createFlowerComposition(flowers);
+        Order order = new Order(flowerBouquet, deliveryMethod, paymentMethod);
+
+        transaction(order, paymentMethod);
+        for (Flower flower : flowerBouquet.getFlowers()) {
+            inventoryOfPlants.remove(flower);
+        }
+        soldProducts.add(order);
+        customer.getBoughtProducts().add(order);
+    }
+
+
+    void transaction(Order order, PaymentMethod paymentMethod){
+        if (order.calculatePrice() > paymentMethod.getBalance()) {
+            throw new RuntimeException("You don\'t have enough money");
+        }
+        this.balance += order.calculatePrice();
+        paymentMethod.pay(order.calculatePrice());
+    }
 
 
 
-    void buy(Priceable priceable, Customer customer, DeliveryMethod deliveryMethod, BuyMethod buyMethod) {
+    void buy(Priceable priceable, Customer customer, Delivery deliveryMethod, PaymentMethod paymentMethod) {
         if (priceable instanceof FlowerCompositionDecorator) {
             if (!readyFlowerDecorations.contains(priceable)) {
                 throw new RuntimeException("There\'s no such flower decoration");
@@ -149,12 +186,9 @@ public class Store {
         else {
             throw new RuntimeException("The there is no such suitable purchase method here");
         }
-        Order order = new Order(priceable, deliveryMethod, buyMethod);
-        if (order.calculatePrice() > customer.getBalance()) {
-            throw new RuntimeException("You don\'t have enough money");
-        }
-        this.balance += order.calculatePrice();
-        customer.setBalance(customer.getBalance() - order.calculatePrice());
+        Order order = new Order(priceable, deliveryMethod, paymentMethod);
+
+        transaction(order,paymentMethod);
 
         if (priceable instanceof FlowerCompositionDecorator) {
             readyFlowerDecorations.remove(priceable);

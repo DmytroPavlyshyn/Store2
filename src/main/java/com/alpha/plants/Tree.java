@@ -5,7 +5,7 @@ import com.alpha.enums.Growing;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public  class Tree extends Plant {
+public class Tree extends Plant {
     String treeType;
 
     public Tree(int startingPrice, boolean isNative, double stemLength, Growing growing, String treeType) {
@@ -34,7 +34,7 @@ public  class Tree extends Plant {
     @Override
     public String toString() {
         return treeType + "{"
-                + super.toString()+
+                + super.toString() +
                 "\n}\n";
     }
 }

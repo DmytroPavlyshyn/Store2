@@ -1,15 +1,28 @@
 package com.alpha.decorations;
 
-import com.alpha.Priceable;
 import com.alpha.enums.WrapperType;
 
-public  class Wrapper extends FlowerCompositionDecorator{
+public class Wrapper extends FlowerCompositionDecorator {
     WrapperType wrapperType;
-    public Wrapper(Priceable priceable,WrapperType wrapperType) {
-        super(priceable);
+
+    public Wrapper(FlowerComposition flowerComposition, WrapperType wrapperType) {
+        super(flowerComposition);
         this.wrapperType = wrapperType;
     }
-    public int calculatePrice(){
-        return getPriceable().calculatePrice() + wrapperType.getPrice();
+
+    public int calculatePrice() {
+        return getFlowerComposition().calculatePrice() + wrapperType.getPrice();
+    }
+
+    @Override
+    public FlowerComposition getFlowerComposition() {
+        return super.getFlowerComposition();
+    }
+
+    @Override
+    public String toString() {
+        return wrapperType.name() + "{" +
+                super.toString() +
+                "} ";
     }
 }

@@ -1,9 +1,8 @@
 package com.alpha.plants;
 
-import com.alpha.Priceable;
+import com.alpha.decorations.Priceable;
 import com.alpha.enums.Growing;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -63,9 +62,9 @@ public class Plant implements Priceable {
     public String toString() {
         return
                 "\nshippingTime=" + shippingTime +
-                ", \nstartingPrice=" + startingPrice +
-                ", \nisNative=" + isNative +
-                ", \nstemLength=" + stemLength +
-                ", \ngrowing=" + growing +"\n";
+                        ", \nstartingPrice=" + startingPrice +
+                        ", \nisNative=" + isNative +
+                        ", \nstemLength=" + stemLength +
+                        ", \ngrowing=" + growing + "\n";
     }
 }

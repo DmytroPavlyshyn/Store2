@@ -1,16 +1,19 @@
 package com.alpha.decorations;
 
-import com.alpha.Priceable;
-
 public class Pot extends FlowerCompositionDecorator {
     final int potPrice = 25;
 
-    public Pot(Priceable priceable) {
+    public Pot(FlowerComposition priceable) {
         super(priceable);
     }
 
     @Override
     public int calculatePrice() {
-        return getPriceable().calculatePrice() + potPrice;
+        return getFlowerComposition().calculatePrice() + potPrice;
+    }
+
+    @Override
+    public FlowerComposition getFlowerComposition() {
+        return super.getFlowerComposition();
     }
 }

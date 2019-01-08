@@ -1,6 +1,9 @@
 package com.alpha;
 
 
+import com.alpha.payment.Cash;
+import com.alpha.payment.PaymentMethod;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,17 +11,20 @@ import java.util.Objects;
 public class Customer {
     private String firstName;
     private String lastName;
-    private Integer balance;
+    private List<PaymentMethod> paymentMethods;
     private List<Order> boughtProducts = new ArrayList<>();
     private final int id;
-    public Customer(String firstName, String lastName, int balance, int id) {
+    public Customer(String firstName, String lastName, int balance, int id, List<PaymentMethod> paymentMethods) {
         if(balance < 0 ){
             throw new RuntimeException("Balance can\'t be negative");
         }
         this.firstName = firstName;
         this.lastName = lastName;
-        this.balance = balance;
         this.id = id;
+        this.paymentMethods = new ArrayList<>();
+        this.paymentMethods.add(new Cash(balance));
+        addAll(paymentMethods);
+
     }
 
     public String getFirstName() {
@@ -29,13 +35,7 @@ public class Customer {
         return lastName;
     }
 
-    public int getBalance() {
-        return balance;
-    }
 
-    public void setBalance(Integer balance) {
-        this.balance = balance;
-    }
 
     public int getId() {
         return id;
@@ -45,12 +45,35 @@ public class Customer {
         return boughtProducts;
     }
 
+    public List<PaymentMethod> getPaymentMethods() {
+        return paymentMethods;
+    }
+    void addAll(List<PaymentMethod> paymentMethods){
+        for(PaymentMethod paymentMethod:paymentMethods){
+            if(paymentMethod instanceof Cash){
+                this.findCash().replenishBalance(paymentMethod.getBalance());
+            }
+            else {
+                this.paymentMethods.add(paymentMethod);
+            }
+        }
+    }
+    PaymentMethod findCash(){
+        for(PaymentMethod paymentMethod:paymentMethods){
+            if(paymentMethod instanceof Cash){
+                return paymentMethod;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", balance=" + balance +
+                ", paymentMethods=" + paymentMethods +
+                ", boughtProducts=" + boughtProducts +
                 ", id=" + id +
                 '}';
     }
@@ -60,14 +83,15 @@ public class Customer {
         if (this == o) return true;
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
-        return id == customer.id &&
+        return getId() == customer.getId() &&
                 Objects.equals(getFirstName(), customer.getFirstName()) &&
                 Objects.equals(getLastName(), customer.getLastName()) &&
-                Objects.equals(getBalance(), customer.getBalance());
+                Objects.equals(getPaymentMethods(), customer.getPaymentMethods()) &&
+                Objects.equals(getBoughtProducts(), customer.getBoughtProducts());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getBalance(), id);
+        return Objects.hash(getFirstName(), getLastName(), getPaymentMethods(), getBoughtProducts(), getId());
     }
 }

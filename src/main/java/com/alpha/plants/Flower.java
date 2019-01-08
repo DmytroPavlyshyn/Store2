@@ -12,7 +12,7 @@ public class Flower extends Plant {
     Color color;
     boolean hasNeedle;
 
-    public Flower( int startingPrice, boolean isNative, double stemLength, Growing growing, String flowerType, Color color, boolean hasNeedle) {
+    public Flower(int startingPrice, boolean isNative, double stemLength, Growing growing, String flowerType, Color color, boolean hasNeedle) {
         super(startingPrice, isNative, stemLength, growing);
         this.flowerType = flowerType;
         this.color = color;
@@ -49,10 +49,10 @@ public class Flower extends Plant {
 
     @Override
     public String toString() {
-        return flowerType+ "{" +
+        return flowerType + "{" +
                 " color=" + color +
                 ", hasNeedle=" + hasNeedle +
-                super.toString()+
+                super.toString() +
                 "\n}\n";
     }
 }
