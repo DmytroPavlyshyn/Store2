@@ -12,9 +12,9 @@ public class Cash implements PaymentMethod {
 
     @Override
     public String toString() {
-        return "Cash{" +
+        return "\ncash{" +
                 "balance=" + balance +
-                '}';
+                "}\n";
     }
 
     @Override

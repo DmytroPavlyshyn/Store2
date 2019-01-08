@@ -7,7 +7,7 @@ public abstract class Card implements PaymentMethod {
     private final String number;
     private final String cvv;
     private final String expirationDate;
-    int balance;
+    protected int balance;
     public Card(int balance, String nameOnCard, String number, String cvv, String expirationDate) {
         if (balance < 0) {
             throw new RuntimeException("Balance must be positive");
@@ -16,6 +16,7 @@ public abstract class Card implements PaymentMethod {
         this.number = number;
         this.cvv = cvv;
         this.expirationDate = expirationDate;
+        this.balance = balance;
     }
 
 
@@ -35,7 +36,7 @@ public abstract class Card implements PaymentMethod {
 
     @Override
     public String toString() {
-        return MessageFormat.format("{0} card[name = {1}, number = {2}, CVV = {3}, expiration = {4}]", getType(), nameOnCard, number, cvv, expirationDate);
+        return MessageFormat.format("\n{0} card[name = {1}, number = {2}, CVV = {3}, expiration = {4}], balance = {5}\n", getType(), nameOnCard, number, cvv, expirationDate,balance);
     }
 
     protected abstract String getType();

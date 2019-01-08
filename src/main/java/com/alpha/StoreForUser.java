@@ -27,9 +27,9 @@ public class StoreForUser {
     public static void main(String[] args) {
 
         Store store = new StoreRandomizer(47).nextStore(5, 5, 5);/*new Store(plants,flowerDecorations,"Ukraine");*/
-        Customer customer = new Customer("Don", "Vova", 1000, 1,
+        Customer customer = new Customer("Don", "Vova",  1,
                 new ArrayList<PaymentMethod>(){{
-                    add(new DebitCard(124, "Don", "Vova", "213", "21/2027"));
+                    add(new DebitCard(2000, "Don", "Vova", "213", "21/2027"));
                 }}
         );
         store.getCustomers().add(customer);

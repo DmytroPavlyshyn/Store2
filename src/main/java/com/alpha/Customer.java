@@ -14,15 +14,13 @@ public class Customer {
     private List<PaymentMethod> paymentMethods;
     private List<Order> boughtProducts = new ArrayList<>();
     private final int id;
-    public Customer(String firstName, String lastName, int balance, int id, List<PaymentMethod> paymentMethods) {
-        if(balance < 0 ){
-            throw new RuntimeException("Balance can\'t be negative");
-        }
+    public Customer(String firstName, String lastName, int id, List<PaymentMethod> paymentMethods) {
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.id = id;
         this.paymentMethods = new ArrayList<>();
-        this.paymentMethods.add(new Cash(balance));
+        this.paymentMethods.add(new Cash(0));
         addAll(paymentMethods);
 
     }
