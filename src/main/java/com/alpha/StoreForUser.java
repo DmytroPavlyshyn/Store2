@@ -5,8 +5,8 @@ import com.alpha.decorations.*;
 import com.alpha.delivery.*;
 import com.alpha.enums.ShowFilter;
 import com.alpha.enums.WrapperType;
-import com.alpha.payment.DebitCard;
 import com.alpha.payment.PaymentMethod;
+import com.alpha.payment.PaymentMethodFactory;
 import com.alpha.plants.*;
 import com.alpha.random.StoreRandomizer;
 
@@ -25,11 +25,11 @@ public class StoreForUser {
     }
 
     public static void main(String[] args) {
-
-        Store store = new StoreRandomizer(47).nextStore(5, 5, 5);/*new Store(plants,flowerDecorations,"Ukraine");*/
-        Customer customer = new Customer("Don", "Vova",  1,
-                new ArrayList<PaymentMethod>(){{
-                    add(new DebitCard(2000, "Don", "Vova", "213", "21/2027"));
+        Scanner scanner = new Scanner(System.in);
+        Store store = new StoreRandomizer(47).nextStore(10, 10, 10);/*new Store(plants,flowerDecorations,"Ukraine");*/
+        Customer customer = new Customer("Don", "Vova", 1,
+                new ArrayList<PaymentMethod>() {{
+                    add(PaymentMethodFactory.getPaymentMethod("Debit", 2000, "Don", "Vova", "213", "21/2027"));
                 }}
         );
         store.getCustomers().add(customer);
@@ -38,7 +38,10 @@ public class StoreForUser {
         while (true) {
             storeForUser.help();
             try {
-                switch (new Scanner(System.in).nextInt()) {
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                switch (choice) {
+
                     case 1:
                         storeForUser.buyPlant(Flower.class, customer);
                         break;
@@ -46,33 +49,24 @@ public class StoreForUser {
                         storeForUser.buyPlant(Tree.class, customer);
                         break;
                     case 3:
-                        storeForUser.buyReadyFlowerDecoration(customer);
+                        storeForUser.buyReadyFlowerComposition(customer);
                         break;
                     case 4:
-                        storeForUser.buyReadyFlowerDecoration(customer);
+                        storeForUser.createAndBuyFlowerComposition(customer);
                         break;
                     case 5:
-                        storeForUser.createAndBuyBouquet(customer);
-                        break;
-                    case 6:
-
-                        break;
-                    case 7:
                         System.out.println(storeForUser.getStore().getFlowers(ShowFilter.ALL));
                         break;
-                    case 8:
+                    case 6:
                         System.out.println(storeForUser.getStore().getTrees(ShowFilter.ALL));
                         break;
-                    case 9:
-                        System.out.println(storeForUser.getStore().getReadyFlowerDecorations());
+                    case 7:
+                        System.out.println(storeForUser.getStore().getReadyFlowerCompositions());
                         break;
-                    case 10:
-
-                        break;
-                    case 11:
+                    case 8:
                         System.out.println(customer.getPaymentMethods());
                         break;
-                    case 12:
+                    case 9:
                         System.out.println(customer.getBoughtProducts());
                         break;
                     default:
@@ -99,16 +93,13 @@ public class StoreForUser {
         System.out.println("What do you want to buy ?" +
                 "\n1  - Buy flower" +
                 "\n2  - Buy tree" +
-                "\n3  - Buy ready flower bouquet" +
-                "\n4  - Buy ready flower pot" +
-                "\n5  - Create and buy bouquet" +
-                "\n6  - Create and buy pot" +
-                "\n7  - Show all available flowers" +
-                "\n8  - Show all available trees" +
-                "\n9  - Show all available flower bouquets" +
-                "\n10 - Show all available flower pots" +
-                "\n11 - Show my balance" +
-                "\n12 - Show bought products"
+                "\n3  - Buy ready flower composition" +
+                "\n4  - Create and buy bouquet" +
+                "\n5  - Show all available flowers" +
+                "\n6  - Show all available trees" +
+                "\n7  - Show all available flower bouquets" +
+                "\n8 - Show my balance" +
+                "\n9 - Show bought products"
         );
     }
 
@@ -128,17 +119,25 @@ public class StoreForUser {
     private Delivery chooseDeliveryMethod() {
         int i = 1;
         for (String deliveryMethod : DeliveryFactory.getDeliveryMethods()) {
-            System.out.println(i++ + ". " + deliveryMethod);
+            System.out.println(i++ + ". " + DeliveryFactory.getDelivery(deliveryMethod));
         }
         return DeliveryFactory.getDelivery(DeliveryFactory.getDeliveryMethods()[readNumberInBounds(1, DeliveryFactory.getDeliveryMethods().length) - 1]);
     }
 
-    private PaymentMethod chooseBuyMethod(Customer customer) {
+    private PaymentMethod choosePaymentMethod(Customer customer) {
         int i = 1;
         for (PaymentMethod paymentMethod : customer.getPaymentMethods()) {
             System.out.println(i++ + ". " + paymentMethod);
         }
         return customer.getPaymentMethods().get(readNumberInBounds(1, customer.getPaymentMethods().size()) - 1);
+    }
+
+    private WrapperType chooseWrapperType() {
+        int i = 1;
+        for (WrapperType wrapperType : WrapperType.values()) {
+            System.out.println(i++ + ". " + wrapperType);
+        }
+        return WrapperType.values()[readNumberInBounds(1, WrapperType.values().length) - 1];
     }
 
     public void buyPlant(Class<? extends Plant> plantClass, Customer customer) {
@@ -147,11 +146,7 @@ public class StoreForUser {
             return;
         }
         System.out.println("What type of " + plantClass.getSimpleName().toLowerCase() + " do you want: \n\t1 - All\n\t2 - Native\n\t3 - Oversea");
-
-
         ShowFilter choiceEn = ShowFilter.values()[readNumberInBounds(1, 3) - 1];
-
-
         List<Plant> plantsOfChosentType = new ArrayList<>();
         if (plantClass.equals(Flower.class)) {
             plantsOfChosentType = store.getFlowers(choiceEn).stream().map((a) -> (Plant) a).collect(Collectors.toList());
@@ -165,36 +160,33 @@ public class StoreForUser {
             return;
         }
         System.out.println("Choose" + plantClass.getSimpleName().toLowerCase());
+
         int i = 1;
         for (Plant plant : plantsOfChosentType) {
             System.out.println(i++ + ". " + plant);
         }
-
-
-//        store.buyPlant(plantsOfChosentType.get(readNumberInBounds(1, i - 1) - 1), customer, chooseDeliveryMethod(), chooseBuyMethod());
-        store.buy(plantsOfChosentType.get(readNumberInBounds(1, i - 1) - 1), customer, chooseDeliveryMethod(), chooseBuyMethod(customer));
+        store.buy(plantsOfChosentType.get(readNumberInBounds(1, i - 1) - 1), customer, chooseDeliveryMethod(), choosePaymentMethod(customer));
 
     }
 
-    public void buyReadyFlowerDecoration(Customer customer) {
-        if (store.getReadyFlowerDecorations().isEmpty()) {
+    public void buyReadyFlowerComposition(Customer customer) {
+        if (store.getReadyFlowerCompositions().isEmpty()) {
             System.out.println("There\'s no  available decorations, try again later");
             return;
         }
-
-        List<FlowerCompositionDecorator> flowerDecorationsOfChosenType = store.getReadyFlowerDecorations();
-
+        List<FlowerCompositionDecorator> flowerDecorationsOfChosenType = store.getReadyFlowerCompositions();
 
         int i = 1;
         for (FlowerCompositionDecorator flowerDecoration : flowerDecorationsOfChosenType) {
             System.out.println(i++ + ". " + flowerDecoration);
         }
 
-        store.buy(flowerDecorationsOfChosenType.get(readNumberInBounds(1, i - 1) - 1), customer, chooseDeliveryMethod(), chooseBuyMethod(customer));
+        store.buy(flowerDecorationsOfChosenType.get(readNumberInBounds(1, i - 1) - 1), customer, chooseDeliveryMethod(), choosePaymentMethod(customer));
 
     }
 
-    FlowerCompositionDecorator createBouquet() {
+
+    FlowerCompositionDecorator createFlowerComposition() {
         List<Flower> availableFlowers = store.getFlowers(ShowFilter.ALL);
         List<Flower> chosenFlowers = new ArrayList<>();
         if (availableFlowers.isEmpty()) {
@@ -211,28 +203,27 @@ public class StoreForUser {
             Flower flower = availableFlowers.get(Integer.parseInt(matcher.group("index")) - 1);
             chosenFlowers.add(flower);
         }
-        i = 1;
-        for (WrapperType wrapperType : WrapperType.values()) {
-            System.out.println(i++ + ". " + wrapperType);
+        System.out.println("Do you want to  put flowers into 1 - wrapper or 2 - pot" + Pot.potPrice + "?");
+        FlowerCompositionDecorator priceable;
+        if (readNumberInBounds(1, 2) == 1) {
+            priceable = new Wrapper(new FlowerComposition(chosenFlowers), chooseWrapperType());
+            System.out.println("Do you want to add tape " + Tape.tapePrice + "?  1 - yes, 2 - no");
+            if (readNumberInBounds(1, 2) == 1) {
+                priceable = new Tape(priceable);
+            }
+        } else {
+            priceable = new Pot(new FlowerComposition(chosenFlowers));
         }
-
-        WrapperType chosenWrapperType = WrapperType.values()[readNumberInBounds(1, WrapperType.values().length) - 1];
-        FlowerCompositionDecorator priceable = new Wrapper(new FlowerComposition(chosenFlowers), chosenWrapperType);
-        System.out.println("Do you want tape 1- yes, 0 - no");
-        if (readNumberInBounds(0, 1) == 1) {
-            priceable = new Tape(priceable);
-        }
-
         return priceable;
     }
 
-    void createAndBuyBouquet(Customer customer) {
+    void createAndBuyFlowerComposition(Customer customer) {
         try {
-            Priceable flowerBouquet = createBouquet();
+            FlowerCompositionDecorator flowerBouquet = createFlowerComposition();
             if (flowerBouquet == null) {
                 return;
             }
-            store.buyFlowerBouquet(((FlowerCompositionDecorator) flowerBouquet).getFlowerComposition().getFlowers(), customer, chooseDeliveryMethod(), chooseBuyMethod(customer));
+            store.buyFlowerComposition(flowerBouquet, customer, chooseDeliveryMethod(), choosePaymentMethod(customer));
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("You entered some wrong indexes, try again!");
         }

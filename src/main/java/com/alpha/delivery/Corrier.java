@@ -4,7 +4,7 @@ import com.alpha.decorations.FlowerComposition;
 import com.alpha.decorations.Priceable;
 
 public class Corrier implements Delivery {
-    final int price = 40;
+    final int price = 15;
     Priceable priceable;
 
     @Override
@@ -19,5 +19,12 @@ public class Corrier implements Delivery {
             numberOfFlowers = ((FlowerComposition) priceable).getFlowers().size();
         }
         return priceable.calculatePrice() + numberOfFlowers * price;
+    }
+
+    @Override
+    public String toString() {
+        return "Corrier{" +
+                "price=" + price +
+                '}';
     }
 }

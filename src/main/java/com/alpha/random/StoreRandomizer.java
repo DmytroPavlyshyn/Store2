@@ -17,7 +17,6 @@ public class StoreRandomizer {
         this.random = new Random(seed);
     }
 
-    private static String[] counties = {"Mexico", "Ukraine", "France", "Brazil", "China", "Turkey"};
     List<Plant> plants = new ArrayList<>();
     List<FlowerCompositionDecorator> flowerDecorations = new ArrayList<>();
 
@@ -87,7 +86,7 @@ public class StoreRandomizer {
         Store store = storeRandomizer.nextStore(10, 10, 4);
         System.out.println(store.getPlants());
         System.out.println("-----------------------------------------------------------------");
-        System.out.println(store.getReadyFlowerDecorations());
+        System.out.println(store.getReadyFlowerCompositions());
        // System.out.println(PlantFactory.getPlant("Rose"));
     }
 

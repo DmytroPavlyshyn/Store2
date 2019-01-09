@@ -1,7 +1,7 @@
 package com.alpha.decorations;
 
 public class Pot extends FlowerCompositionDecorator {
-    final int potPrice = 25;
+    public static final int potPrice = 25;
 
     public Pot(FlowerComposition priceable) {
         super(priceable);
@@ -9,6 +9,8 @@ public class Pot extends FlowerCompositionDecorator {
 
     @Override
     public int calculatePrice() {
+        if (flowerComposition instanceof FlowerCompositionDecorator)
+            return  flowerComposition.calculatePrice() + potPrice;
         return getFlowerComposition().calculatePrice() + potPrice;
     }
 

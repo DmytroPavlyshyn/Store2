@@ -4,7 +4,7 @@ package com.alpha.delivery;
         import com.alpha.decorations.Priceable;
 
 public class UkrPoshta implements Delivery{
-    final int price = 25;
+    final int price = 5;
     Priceable priceable;
     @Override
     public void setPriceable(Priceable priceable) {
@@ -17,6 +17,13 @@ public class UkrPoshta implements Delivery{
         if(priceable instanceof FlowerComposition){
             numberOfFlowers = ((FlowerComposition) priceable).getFlowers().size();
         }
-        return priceable.calculatePrice() + numberOfFlowers*price;
+        return  numberOfFlowers*price;
+    }
+
+    @Override
+    public String toString() {
+        return "UkrPoshta{" +
+                "price=" + price +
+                "}";
     }
 }

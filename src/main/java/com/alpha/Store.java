@@ -1,12 +1,12 @@
 package com.alpha;
 
 
-
 import com.alpha.decorations.FlowerComposition;
 import com.alpha.decorations.FlowerCompositionDecorator;
 
 import com.alpha.decorations.Priceable;
 import com.alpha.delivery.Delivery;
+import com.alpha.discount.SimpleDiscount;
 import com.alpha.enums.ShowFilter;
 import com.alpha.payment.PaymentMethod;
 import com.alpha.plants.Flower;
@@ -19,34 +19,28 @@ import java.util.*;
 public class Store {
 
     private List<Plant> inventoryOfPlants;
-    private List<FlowerCompositionDecorator> readyFlowerDecorations;
+    private List<FlowerCompositionDecorator> readyFlowerCompositions;
     private List<Order> soldProducts = new ArrayList<>();
-    private String country;
     private Set<Customer> customers = new LinkedHashSet<>();
     private Integer balance;
 
-    public Store(List<Plant> inventoryOfPlants, List<FlowerCompositionDecorator> readyFlowerDecorations) {
+    public Store(List<Plant> inventoryOfPlants, List<FlowerCompositionDecorator> readyFlowerCompositions) {
         this.inventoryOfPlants = inventoryOfPlants;
-        this.readyFlowerDecorations = readyFlowerDecorations;
+        this.readyFlowerCompositions = readyFlowerCompositions;
         this.balance = 0;
     }
 
 
-    //getters
     public List<Plant> getPlants() {
         return inventoryOfPlants;
     }
 
-    public List<FlowerCompositionDecorator> getReadyFlowerDecorations() {
-        return readyFlowerDecorations;
+    public List<FlowerCompositionDecorator> getReadyFlowerCompositions() {
+        return readyFlowerCompositions;
     }
 
     public List<Order> getSoldProducts() {
         return soldProducts;
-    }
-
-    public String getCountry() {
-        return country;
     }
 
     public Set<Customer> getCustomers() {
@@ -57,12 +51,12 @@ public class Store {
         List<Plant> plants = new ArrayList<>();
         for (Plant plant : inventoryOfPlants) {
             if (showFilter.equals(ShowFilter.NATIVE)) {
-                if (!isNative(plant)) {
+                if (!plant.isNative()) {
                     continue;
                 }
             }
             if (showFilter.equals(ShowFilter.OVERSEA)) {
-                if (isNative(plant)) {
+                if (plant.isNative()) {
                     continue;
                 }
             }
@@ -117,7 +111,6 @@ public class Store {
     }
 
 
-
     public Integer getBalance() {
         return balance;
     }
@@ -149,11 +142,10 @@ public class Store {
         throw new RuntimeException("There\'s no such flowers");
     }
 
-    void buyFlowerBouquet(List<Flower> flowers, Customer customer, Delivery deliveryMethod, PaymentMethod paymentMethod) {
-        FlowerComposition flowerBouquet = createFlowerComposition(flowers);
-        Order order = new Order(flowerBouquet, deliveryMethod, paymentMethod);
-
-        transaction(order, paymentMethod);
+    void buyFlowerComposition(FlowerCompositionDecorator flowerCompositionDecorator, Customer customer, Delivery deliveryMethod, PaymentMethod paymentMethod) {
+        FlowerComposition flowerBouquet = createFlowerComposition(flowerCompositionDecorator.getFlowerComposition().getFlowers());
+        Order order = new Order(flowerCompositionDecorator, deliveryMethod, paymentMethod);
+        transaction(order);
         for (Flower flower : flowerBouquet.getFlowers()) {
             inventoryOfPlants.remove(flower);
         }
@@ -162,36 +154,34 @@ public class Store {
     }
 
 
-    void transaction(Order order, PaymentMethod paymentMethod){
-        if (order.calculatePrice() > paymentMethod.getBalance()) {
-            throw new RuntimeException("You don\'t have enough money");
-        }
-        this.balance += order.calculatePrice();
-        paymentMethod.pay(order.calculatePrice());
+    void transaction(Order order) {
+        int price = calculatePrice(order);
+        this.balance += price;
+        order.getPaymentMethod().pay(price);
     }
 
-
+    int calculatePrice(Order order) {
+        int discount = new SimpleDiscount().calculateDiscount(order);
+        return order.calculatePrice() - discount;
+    }
 
     void buy(Priceable priceable, Customer customer, Delivery deliveryMethod, PaymentMethod paymentMethod) {
         if (priceable instanceof FlowerCompositionDecorator) {
-            if (!readyFlowerDecorations.contains(priceable)) {
-                throw new RuntimeException("There\'s no such flower decoration");
+            if (!readyFlowerCompositions.contains(priceable)) {
+                throw new RuntimeException("There\'s no such flower composition");
             }
-        }
-        else if (priceable instanceof Plant) {
+        } else if (priceable instanceof Plant) {
             if (!inventoryOfPlants.contains(priceable)) {
                 throw new RuntimeException("There\'s no such plant");
             }
-        }
-        else {
+        } else {
             throw new RuntimeException("The there is no such suitable purchase method here");
         }
         Order order = new Order(priceable, deliveryMethod, paymentMethod);
-
-        transaction(order,paymentMethod);
+        transaction(order);
 
         if (priceable instanceof FlowerCompositionDecorator) {
-            readyFlowerDecorations.remove(priceable);
+            readyFlowerCompositions.remove(priceable);
         }
         if (priceable instanceof Plant) {
             inventoryOfPlants.remove(priceable);
@@ -200,9 +190,6 @@ public class Store {
         customer.getBoughtProducts().add(order);
     }
 
-    private boolean isNative(Plant plant) {
-        return plant.isNative();
-    }
 
 }
 

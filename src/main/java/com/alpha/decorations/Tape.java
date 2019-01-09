@@ -2,7 +2,7 @@ package com.alpha.decorations;
 
 
 public class Tape extends FlowerCompositionDecorator {
-    final int tapePrice = 10;
+    public static final int tapePrice = 10;
 
     public Tape(FlowerComposition flowerComposition) {
         super(flowerComposition);
@@ -10,6 +10,9 @@ public class Tape extends FlowerCompositionDecorator {
 
     @Override
     public int calculatePrice() {
+        if (flowerComposition instanceof FlowerCompositionDecorator)
+            return  flowerComposition.calculatePrice() + tapePrice;
+
         return getFlowerComposition().calculatePrice() + tapePrice;
     }
 

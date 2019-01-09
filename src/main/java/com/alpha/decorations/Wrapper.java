@@ -11,6 +11,8 @@ public class Wrapper extends FlowerCompositionDecorator {
     }
 
     public int calculatePrice() {
+        if (flowerComposition instanceof FlowerCompositionDecorator)
+            return  flowerComposition.calculatePrice() + wrapperType.getPrice();
         return getFlowerComposition().calculatePrice() + wrapperType.getPrice();
     }
 
